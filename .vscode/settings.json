@@ -45,5 +45,13 @@
     "disable-linters": [
       "resource-limits"
     ]
+  },
+  "cSpell.customDictionaries": {
+    "custom-dictionary-folder-azure-cleanroom": {
+      "name": "custom-dictionary-folder-azure-cleanroom",
+      "path": "${workspaceFolder:azure-cleanroom}/.cspell/custom-dictionary-folder-azure-cleanroom.txt",
+      "addWords": true,
+      "scope": "folder"
+    }
   }
 }

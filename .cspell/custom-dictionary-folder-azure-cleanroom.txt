@@ -1,0 +1,9 @@
+# Custom Dictionary Words
+excalidraw
+exfiltrate
+exfiltrated
+exfiltrating
+exfiltration
+ONNX
+VMPL
+wasmtime
