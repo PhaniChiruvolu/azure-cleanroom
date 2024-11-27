@@ -1,4 +1,7 @@
 # Custom Dictionary Words
+artefacts
+blobfuse
+DEPA
 excalidraw
 exfiltrate
 exfiltrated
