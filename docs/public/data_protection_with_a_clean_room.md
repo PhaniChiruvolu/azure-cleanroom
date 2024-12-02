@@ -1,8 +1,8 @@
-# The Data Protection Problem
+# *Data Protection with a Clean Room*
 <!--
 This section provides an overview of the progression of mechanisms for protecting customers’ private data from exfiltration in a public cloud infrastructure and presents the Clean Room as the next stage in this evolutionary process.
 -->
-
+<!--TODO: Add links to all the offerings/technologies mentioned in this file.-->
 Data is the core asset that customers seek to protect.
 
 In an on-premises model, data is typically protected by controlling access to the data by operators (identity) and computers (isolated networks). To provide greater protection, data is often encrypted at rest (physical theft) and any remote access is additionally protected through a network firewall (network theft).
