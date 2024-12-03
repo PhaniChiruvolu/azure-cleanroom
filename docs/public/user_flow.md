@@ -9,23 +9,209 @@
 
 The workflow for storing sensitive data in the public cloud and consuming it from an application executing within a Clean Room involves multiple phases.
 
+```mermaid
+flowchart LR
+%%   A@{ shape: manual-file, label: "File Handling"}
+%%   B@{ shape: manual-input, label: "User Input"}
+%%   C@{ shape: docs, label: "Multiple Documents"}
+%%   D@{ shape: procs, label: "Process Automation"}
+%%   E@{ shape: paper-tape, label: "Paper Records"}
+
+%%   subgraph Workflow
+%%     direction LR
+%%     subgraph B1
+%%         direction TB
+%%         B --> C --> B1Z@{shape: cyl, label: "Database"}
+%%     end
+%%     subgraph B2
+%%         direction TB
+%%         D --> E
+%%     end
+%%   end
+%%   AA@{ shape: circle, label: "Start" } -->|run| Workflow
+%%   AIO@{ shape: lean-r, label: "Input/Output" } --o|test| Workflow
+%%   Workflow ==> Z@{ shape: stadium, label: "Terminal point" }
+%%   B1 -.-> B2
+```
+
+```mermaid
+stateDiagram-v2
+    direction TB
+    DataPrep: Data Preparation
+    CodePrep: Code Preparation
+    GenerateSpec: Specification Generation
+    PreProvision: Pre Provisioning
+    ResourceProvision: Resource Provisioning
+
+    [*] --> DataPrep
+    state DataPrep {
+        [*] --> [*]
+    }
+    note right of DataPrep
+        Secure data to processed inside the clean room.
+    end note
+
+    state CodePrep {
+        [*] --> [*]
+    }
+    note left of CodePrep
+        Secure data to processed inside the clean room.
+    end note
+
+    state GenerateSpec {
+        [*] --> [*]
+    }
+    note right of GenerateSpec
+        Author clean room specification.
+    end note
+
+    state PreProvision {
+        [*] --> [*]
+    }
+    note left of PreProvision
+        Provision artefacts for deploying a clean room.
+    end note
+
+    state ResourceProvision {
+        [*] --> [*]
+    }
+    note left of ResourceProvision
+        Configure secure access from the computation environment to their data.
+    end note
+
+    DataPrep --> CodePrep
+    CodePrep --> GenerateSpec
+    GenerateSpec --> PreProvision
+    PreProvision --> ResourceProvision
+    ResourceProvision --> [*]
+```
+
 ### Preparation Stage
 
 #### DATA PREPARATION PHASE
 
 In this phase, customers secure the data to be processed inside the clean room. Typical considerations for this phase include evaluation of storage requirements for the encrypted data, mechanisms for protection of the data through encryption, and mechanisms for secure storage of the encryption key.
 
+```mermaid
+sequenceDiagram
+title Data Preparation Phase
+
+box green Customer Premises
+    actor Customer
+    participant Tooling
+end
+
+box brown Public Cloud
+    participant Blob as Cloud Storage
+end
+
+Customer->>+Tooling: Generate DEK
+Tooling--)-Customer: DEK
+Customer->>+Tooling: Upload(data, DEK)
+Tooling--)Tooling: Encrypt data using DEK
+Tooling->>+Blob: Encrypted data
+Blob--)-Tooling: <br>
+Tooling--)-Customer: <br>
+```
+
 #### SPECIFICATION GENERATION PHASE
 
 In this phase, customers author specification of clean room(s) that should have access to the secured data. Typical considerations for this phase include evaluation of the security requirements (type of the clean room), evaluation of the privacy protection requirements (proxy mode and configuration), and evaluation of the deployment model (monolithic vs distributed).
+
+```mermaid
+sequenceDiagram
+title Specification Generation Phase
+
+box green Customer Premises
+    actor Customer
+    participant Tooling
+end
+
+box brown Public Cloud
+    participant AD as Azure<br>Active Directory
+    participant ACR as Container<br>Registry
+end
+
+Customer-->>+Tooling: Initialize<br>Specification
+
+Customer->>+AD: Provision clean room identity
+AD--)-Customer: Identity details
+Customer->>Tooling: Add identity details
+
+Customer->>+ACR: Publish application
+ACR--)-Customer: Container details
+
+Customer->>Tooling: Add application details
+Customer->>Tooling: Add endpoint details
+
+loop 
+Customer->>Tooling: Add data source details
+Customer->>Tooling: Add data sink details
+end
+
+Tooling--)-Customer: Clean Room<br>Specification
+
+```
 
 #### PRE-PROVISIONING PHASE
 
 In this phase, customers provision artefacts for deploying a clean room. Typical considerations for this phase include mechanisms for translating the clean room specification into a deployment template for the trusted computation environment, and mechanisms for associating an attestable identity with this environment to facilitate secure access to protected resources.
 
+```mermaid
+sequenceDiagram
+title Pre-Provisioning Phase
+
+box green Customer Premises
+    actor Customer
+    participant Tooling
+end
+
+box brown Public Cloud
+    participant MCR as Clean Room<br>Registry
+end
+
+Customer->>+Tooling: Translate specification
+Tooling->>+MCR: Get<br>infrastructure<br>details
+MCR--)-Tooling: Infrastructure<br>details
+note over Tooling: Generate<br>deployment template
+note over Tooling: Generate<br>key release policy
+Tooling--)-Customer: Deployment template,<br>key release policy
+```
+
 #### RESOURCE PROVISIONING PHASE
 
 In this phase, customers configure secure access from the computation environment to their data. Typical considerations for this phase include mechanisms for enabling role-based access to resources from the clean room identity and verifying the clean room attestation before releasing encryption keys from secure storage.
+
+```mermaid
+sequenceDiagram
+title Resource Provisioning Phase
+
+box green Customer Premises
+    actor Customer
+    participant Tooling
+end
+
+box purple Confidential
+    participant mHSM as Azure<br>mHSM
+end
+
+box brown Public Cloud
+    participant Blob as Cloud Storage
+    participant AKV as Azure<br>Key Vault
+end
+
+
+    Customer->>+Tooling: Generate KEK
+    Tooling->>+mHSM: Store KEK<br>(key release policy,<br>clean room identity)
+    mHSM--)-Tooling:<br>
+    Tooling--)-Customer:<br>
+    Customer->>+Tooling: Wrap DEK
+    Tooling->>+AKV: Store Wrapped DEK<br>(clean room identity)
+    AKV--)-Tooling: <br>
+    Tooling--)-Customer: <br>
+    Customer->>+Blob: Provision access<br>(clean room identity)
+    Blob-->>-Customer: <br>
+```
 
 ### Execution Stage
 
@@ -49,22 +235,6 @@ participant Blob
 participant AD
 participant mHSM
 participant AKV
-
-rect Teal
-note over Customer,AKV: Data Preparation Phase
-    Customer->>+Tooling: Generate DEK
-    Tooling-->>-Customer: DEK
-    Customer->>+Tooling: Encrypt data with DEK
-    Tooling-->>-Customer: Encrypted data
-    Customer->>+Blob: Upload (encrypted data)
-    Blob-->>-Customer: `
-end
-
-rect Teal
-note over Customer,AKV: Specification Generation Phase
-    Customer->>+Tooling: Generate specification
-    Tooling-->>-Customer: `
-end
 
 rect Teal
 note over Customer,AKV: Pre-Provisioning Phase
