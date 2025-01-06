@@ -17,21 +17,48 @@ flowchart LR
 %%   D@{ shape: procs, label: "Process Automation"}
 %%   E@{ shape: paper-tape, label: "Paper Records"}
 
+    subgraph DataPrep [Prepare Data]
+        _1@{ shape: notch-rect, label: "Publish (secured) data to be processed inside the clean room." }
+        %% direction TB
+        %% _1@{ shape: braces, label: "Secure data to processed inside the clean room." }
+        %% B --> C --> B1Z@{shape: cyl, label: "Database"}
+    end
+    subgraph CodePrep [Application Preparation]
+        _2@{ shape: notch-rect, label: "Publish application to be executed inside the clean room." }
+        %% direction TB
+        %% D --> E
+    end
+    subgraph GenerateSpec [Specification Generation]
+        _3@{ shape: notch-rect, label: "Author clean room specification." }
+    end
+    subgraph PreProvision [Pre Provisioning]
+        _4@{ shape: notch-rect, label: "Provision artefacts for deploying a clean room." }
+    end
+    subgraph ResourceProvision [Resource Provisioning]
+        _5@{ shape: notch-rect, label: "Configure secure access from clean room to data." }
+    end
+    subgraph ComputeProvision [Compute Provisioning]
+        _6@{ shape: notch-rect, label: "Deploy clean room." }
+    end
+    subgraph Execution [Application Execution]
+        _7@{ shape: notch-rect, label: "Launch application inside clean room." }
+    end
+
 %%   subgraph Workflow
-%%     direction LR
-%%     subgraph B1
-%%         direction TB
-%%         B --> C --> B1Z@{shape: cyl, label: "Database"}
-%%     end
-%%     subgraph B2
-%%         direction TB
-%%         D --> E
-%%     end
+%%     direction TB
 %%   end
 %%   AA@{ shape: circle, label: "Start" } -->|run| Workflow
 %%   AIO@{ shape: lean-r, label: "Input/Output" } --o|test| Workflow
 %%   Workflow ==> Z@{ shape: stadium, label: "Terminal point" }
-%%   B1 -.-> B2
+  Start@{shape: circle, label: "Start"}
+  Start -.-> DataPrep & CodePrep-.-> GenerateSpec
+%%   CodePrep -.-> GenerateSpec
+  GenerateSpec -.-> PreProvision
+  PreProvision -.-> ResourceProvision
+  ResourceProvision -.-> ComputeProvision
+  ComputeProvision -.-> Execution
+  Finish@{shape: stadium, label: "Application" }
+  Execution -.-> Finish
 ```
 
 ```mermaid
@@ -55,7 +82,7 @@ stateDiagram-v2
         [*] --> [*]
     }
     note left of CodePrep
-        Secure data to processed inside the clean room.
+        Secure code to processed inside the clean room.
     end note
 
     state GenerateSpec {
@@ -76,7 +103,7 @@ stateDiagram-v2
         [*] --> [*]
     }
     note left of ResourceProvision
-        Configure secure access from the computation environment to their data.
+        Configure secure access from the computation environment to data.
     end note
 
     DataPrep --> CodePrep
@@ -114,6 +141,37 @@ Blob--)-Tooling: <br>
 Tooling--)-Customer: <br>
 ```
 
+#### CODE PREPARATION PHASE
+
+In this phase, code providers secure the code for collaboration, and it is executed concurrently/independently by each collaborator. Typical considerations for this phase include evaluation of storage requirements for the encrypted code, mechanisms for protection of the code through encryption, and mechanisms for secure storage of the encryption key.
+
+```mermaid
+sequenceDiagram
+title Code Preparation Phase
+
+box green Customer Premises
+    actor Customer
+    participant Tooling
+end
+
+box brown Public Cloud
+    participant Blob as Cloud Storage
+    participant ACR as Application<br>Registry
+end
+
+Customer->>+ACR: Publish application
+ACR--)-Customer: Container details
+
+Customer->>+Tooling: Generate DEK
+Tooling--)-Customer: DEK
+Customer->>+Tooling: Upload(secret sauce, DEK)
+Tooling--)Tooling: Encrypt secret sauce using DEK
+Tooling->>+Blob: Encrypted secret sauce
+Blob--)-Tooling: <br>
+Tooling--)-Customer: <br>
+
+```
+
 #### SPECIFICATION GENERATION PHASE
 
 In this phase, customers author specification of clean room(s) that should have access to the secured data. Typical considerations for this phase include evaluation of the security requirements (type of the clean room), evaluation of the privacy protection requirements (proxy mode and configuration), and evaluation of the deployment model (monolithic vs distributed).
@@ -129,7 +187,6 @@ end
 
 box brown Public Cloud
     participant AD as Azure<br>Active Directory
-    participant ACR as Container<br>Registry
 end
 
 Customer-->>+Tooling: Initialize<br>Specification
@@ -138,10 +195,8 @@ Customer->>+AD: Provision clean room identity
 AD--)-Customer: Identity details
 Customer->>Tooling: Add identity details
 
-Customer->>+ACR: Publish application
-ACR--)-Customer: Container details
-
-Customer->>Tooling: Add application details
+Customer->>Tooling: Add application registry details
+Customer->>Tooling: Add secret sauce details
 Customer->>Tooling: Add endpoint details
 
 loop 
