@@ -23,7 +23,8 @@
         "ms-python.black-formatter",
         "github.vscode-github-actions",
         "bierner.markdown-mermaid",
-        "vscode-icons-team.vscode-icons"
+        "vscode-icons-team.vscode-icons",
+        "pomdtr.excalidraw-editor"
       ]
     }
   },
