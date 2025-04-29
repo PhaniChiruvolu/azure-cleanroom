@@ -10,7 +10,7 @@ The infrastructure takes on the responsibility of ensuring that the customers’
 accessible outside the confidential TEE while treating the customers’ application as
 opaque/untrusted code and executes the same within a sandbox enforcing the desired protection.
 
-![Canonical representation of a Clean Room](../assets/excalidraw/cleanroom_canonical.svg)
+![Canonical representation of a Clean Room](../assets/excalidraw/cleanroom_canonical.excalidraw.svg)
 Figure - _Canonical representation of a Clean Room_
 
 A canonical Clean Room provides a built-in mechanism for:

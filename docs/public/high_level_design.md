@@ -6,7 +6,7 @@ Prerequisites: Architectural Overview
 -->
 Azure Clean Room implements this architecture on top of Azure Confidential Container Instances (Confidential ACI).
 
-![Type 0 Azure Clean Room using Confidential ACI](../assets/excalidraw/cleanroom_type0_custom_runtime.svg)
+![Type 0 Azure Clean Room using Confidential ACI](../assets/excalidraw/cleanroom_type0_custom_runtime.excalidraw.svg)
 Figure *Type 0 Azure Clean Room using Confidential ACI (Production)*
 
 - The clean room specification is translated into a Confidential ACI container group specification, consisting of a set of infrastructure containers (sidecars) executing audited/trusted code, and a set of user containers running unaudited/untrusted code.

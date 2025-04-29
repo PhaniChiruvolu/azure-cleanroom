@@ -80,7 +80,7 @@ A more pragmatic/useful approach for “open” mode scenarios is an ability to 
 
 ### Custom Runtime
 
-![Clean Room with custom runtime](../assets/excalidraw/cleanroom_custom_runtime.svg)
+![Clean Room with custom runtime](../assets/excalidraw/cleanroom_custom_runtime.excalidraw.svg)
 Figure - _Clean Room with custom runtime_
 
 The most straightforward trust-based rule for application code would be enforcement of a customer specified digital signature for the executable being launched inside the sandbox. This externally trusted executable is treated as a “custom runtime” by the Clean Room infrastructure, which provides the necessary support for optionally passing in per instance opaque/untrusted configuration and payload as injected resources.
@@ -93,7 +93,7 @@ Similarly, customers collaborating for ML model training could agree upon using 
 
 ### Specialized Runtime
 
-![Clean Room with specialized runtime](../assets/excalidraw/cleanroom_specialized_runtime.svg)
+![Clean Room with specialized runtime](../assets/excalidraw/cleanroom_specialized_runtime.excalidraw.svg)
 Figure - _Clean Room with specialized runtime_
 
 For verticals/domains with large customer demand for data processing, it is likely that Microsoft / ISV partners have existing solutions to create simplified workflows enhancing customer experience.

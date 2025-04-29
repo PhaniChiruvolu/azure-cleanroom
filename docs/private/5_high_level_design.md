@@ -20,7 +20,7 @@ DEPA Confidential Clean Rooms are a privacy preserving construct providing a sec
 
 ### Canonical Clean Room
 
-![Type 0 Azure Clean Room using Confidential ACI (Canonical)](../assets/excalidraw/cleanroom_type0_canonical.svg)
+![Type 0 Azure Clean Room using Confidential ACI (Canonical)](../assets/excalidraw/cleanroom_type0_canonical.excalidraw.svg)
 
 Figure *Type 0 Azure Clean Room using Confidential ACI (Canonical)*
 
